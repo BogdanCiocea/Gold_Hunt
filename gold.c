@@ -37,6 +37,7 @@ void setup()
     fruitx = rand() % ((length - 1) * 4) + 1;
     fruity = rand() % length;
 
+	
     // Check if the fruit collides with barriers
     while (barriers[fruity * (length * 2) + fruitx]) {
         fruitx = rand() % ((length - 1) * 4) + 1;
@@ -62,10 +63,19 @@ void draw() {
 	system("clear");
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < length * 4; j++) {
+
 			int isBarrier = barriers[i * (length * 2) + j];
 
 			if (i == 0 || i == length - 1 || j == 0 || j == length * 4 - 1) {
-				printf("#");
+				if (i == length / 2 || i == length / 2 + 1 
+					|| i == length / 2 - 1 || j == length * 2
+					|| j == length * 2 + 1 || j == length * 2 - 1
+					|| j == length * 2 + 2 || j == length * 2 - 2
+					|| j == length * 2 + 3 || j == length * 2 - 3)
+					// Portals woooooooooooooooooooo
+					printf("\033[1;35m#\033[0m"); 
+				else
+					printf("#");
 			} else if (i == fruity && j == fruitx) {
 				printf("\033[1;33m$\033[0m");
 			} else if (i == snake_y && j == snake_x) {
@@ -171,10 +181,42 @@ void logic()
 	if (snake_x <= 0 || snake_x >= length * 4 - 1
 		|| snake_y <= 0 || snake_y >= length - 1
 		|| barriers[snake_y * (length * 2) + snake_x]) {
-		system("mplayer sounds/moody-blip-43107.mp3 > /dev/null 2>&1 &");
-		lives--;
-		snake_x = length * 2;
-		snake_y = length / 2;
+
+		if (snake_x == 0 && (snake_y == length / 2
+		|| snake_y == length / 2 + 1 || snake_y == length / 2 - 1)) {
+			snake_x = length * 4 - 2;
+			system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+		}
+		else if (snake_x == length * 4 - 1
+				&& (snake_y == length / 2 || snake_y == length / 2 + 1
+					|| snake_y == length / 2 - 1)) {
+						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+						snake_x = 1;
+					}
+		else if (snake_y == 0
+					&& (snake_x == length * 2 || snake_x == length * 2 + 1
+						|| snake_x == length * 2 - 1
+						|| snake_x == length * 2 + 2
+						|| snake_x == length * 2 - 2
+						|| snake_x == length * 2 + 3
+						|| snake_x == length * 2 - 3)) {
+							system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+							snake_y = length - 2;
+						}
+		else if (snake_y == length - 1
+					&& (snake_x == length * 2 || snake_x == length * 2 + 1
+					|| snake_x == length * 2 - 1 || snake_x == length * 2 + 2
+					|| snake_x == length * 2 - 2 || snake_x == length * 2 + 3
+					|| snake_x == length * 2 - 3)) {
+						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+						snake_y = 1;
+					}
+		else {
+			system("mplayer sounds/moody-blip-43107.mp3 > /dev/null 2>&1 &");
+			lives--;
+			snake_x = length * 2;
+			snake_y = length / 2;
+		}
 	}
 
 	if (lives <= 0) {
@@ -220,7 +262,6 @@ void print_loading_animation(int num_cycles) {
             fflush(stdout);
             usleep(500000);
 
-            // Clear the printed text
             for (size_t i = 0; i < strlen(loading) + strlen(dots[dot_index]); i++) {
                 printf("\b \b");
                 //fflush(stdout);
@@ -228,7 +269,7 @@ void print_loading_animation(int num_cycles) {
             }
         }
     }
-    printf("\n"); // Print a newline after the animation
+    printf("\n");
 }
 
 void choose_level()
