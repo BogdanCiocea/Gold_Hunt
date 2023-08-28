@@ -9,15 +9,9 @@
 #define LENGTH_OF_MAP 28
 
 const int length = LENGTH_OF_MAP;
-int points;
-int lives;
-int fruitx, fruity;
-int snake_x, snake_y;
-int gameover;
-int flag;
-int difficulty;
+int points, lives, fruitx, fruity, snake_x, snake_y;
+int gameover, flag, difficulty, highscore;
 int *barriers;
-int highscore;
 
 void setup()
 {
@@ -40,12 +34,13 @@ void setup()
     flag = 1;
 
     // Generate fruit coordinates
-    fruitx = rand() % (length * 4);
+    fruitx = rand() % ((length - 1) * 4) + 1;
     fruity = rand() % length;
 
+	
     // Check if the fruit collides with barriers
     while (barriers[fruity * (length * 2) + fruitx]) {
-        fruitx = rand() % (length * 4);
+        fruitx = rand() % ((length - 1) * 4) + 1;
         fruity = rand() % length;
     }
 
@@ -68,10 +63,19 @@ void draw() {
 	system("clear");
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < length * 4; j++) {
+
 			int isBarrier = barriers[i * (length * 2) + j];
 
 			if (i == 0 || i == length - 1 || j == 0 || j == length * 4 - 1) {
-				printf("#");
+				if (i == length / 2 || i == length / 2 + 1 
+					|| i == length / 2 - 1 || j == length * 2
+					|| j == length * 2 + 1 || j == length * 2 - 1
+					|| j == length * 2 + 2 || j == length * 2 - 2
+					|| j == length * 2 + 3 || j == length * 2 - 3)
+					// Portals woooooooooooooooooooo
+					printf("\033[1;35m#\033[0m"); 
+				else
+					printf("#");
 			} else if (i == fruity && j == fruitx) {
 				printf("\033[1;33m$\033[0m");
 			} else if (i == snake_y && j == snake_x) {
@@ -177,10 +181,42 @@ void logic()
 	if (snake_x <= 0 || snake_x >= length * 4 - 1
 		|| snake_y <= 0 || snake_y >= length - 1
 		|| barriers[snake_y * (length * 2) + snake_x]) {
-		system("mplayer sounds/moody-blip-43107.mp3 > /dev/null 2>&1 &");
-		lives--;
-		snake_x = length * 2;
-		snake_y = length / 2;
+
+		if (snake_x == 0 && (snake_y == length / 2
+		|| snake_y == length / 2 + 1 || snake_y == length / 2 - 1)) {
+			snake_x = length * 4 - 2;
+			system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+		}
+		else if (snake_x == length * 4 - 1
+				&& (snake_y == length / 2 || snake_y == length / 2 + 1
+					|| snake_y == length / 2 - 1)) {
+						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+						snake_x = 1;
+					}
+		else if (snake_y == 0
+					&& (snake_x == length * 2 || snake_x == length * 2 + 1
+						|| snake_x == length * 2 - 1
+						|| snake_x == length * 2 + 2
+						|| snake_x == length * 2 - 2
+						|| snake_x == length * 2 + 3
+						|| snake_x == length * 2 - 3)) {
+							system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+							snake_y = length - 2;
+						}
+		else if (snake_y == length - 1
+					&& (snake_x == length * 2 || snake_x == length * 2 + 1
+					|| snake_x == length * 2 - 1 || snake_x == length * 2 + 2
+					|| snake_x == length * 2 - 2 || snake_x == length * 2 + 3
+					|| snake_x == length * 2 - 3)) {
+						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
+						snake_y = 1;
+					}
+		else {
+			system("mplayer sounds/moody-blip-43107.mp3 > /dev/null 2>&1 &");
+			lives--;
+			snake_x = length * 2;
+			snake_y = length / 2;
+		}
 	}
 
 	if (lives <= 0) {
@@ -224,17 +260,16 @@ void print_loading_animation(int num_cycles) {
         for (unsigned int dot_index = 0; dot_index < sizeof(dots) / sizeof(dots[0]); dot_index++) {
             printf("%s%s", loading, dots[dot_index]);
             fflush(stdout);
-            usleep(500000); // Delay in microseconds (500,000 microseconds = 500 milliseconds)
+            usleep(500000);
 
-            // Clear the printed text
             for (size_t i = 0; i < strlen(loading) + strlen(dots[dot_index]); i++) {
                 printf("\b \b");
                 //fflush(stdout);
-                usleep(50000); // Short delay to simulate blinking effect
+                usleep(50000);
             }
         }
     }
-    printf("\n"); // Print a newline after the animation
+    printf("\n");
 }
 
 void choose_level()
@@ -295,10 +330,12 @@ restart:
 	
 	title_screen_display();
 
-	print_loading_animation(1); // Repeat the animation 3 times
+	print_loading_animation(1);
 
-    fflush(stdout); // Flush the output buffer to ensure the message is displayed immediately
+    fflush(stdout);
+
 	//sleep(4);
+
 	setup();
 	system("pkill mplayer");
 	system("mplayer -loop 9999 sounds/2020-03-22_-_8_Bit_Surf_-_FesliyanStudios.com_-_David_Renda.mp3 > /dev/null 2>&1 &");
