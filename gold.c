@@ -280,6 +280,12 @@ void choose_level()
 		goto skip;
 	}
 
+	if (difficulty + 10 == 911) {
+		system("pkill mplayer");
+		system("mplayer -loop 9999 sounds/i_shoot.mp3> /dev/null 2>&1 &");
+		goto skip;
+	}
+
 	if (difficulty > 0 || difficulty < -10) {
 		system("pkill mplayer");
 		system("mplayer -loop 9999 sounds/song-of-storms.mp3 > /dev/null 2>&1 &");
