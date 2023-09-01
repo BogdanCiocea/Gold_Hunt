@@ -42,7 +42,8 @@ void playlist()
 		"retro-wave",
 		"8bittown",
 		"frontier",
-		"zelda"
+		"zelda",
+		"memory_reboot"
     };
 
 	int numSongs = sizeof(playlist) / sizeof(playlist[0]);
@@ -418,43 +419,43 @@ void logic()
 		switch (flag) {
 			case 1:
 				snake_x--;
-				playSound("sounds/walking2.mp3", 70);
+				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 2:
 				snake_y++;
-				playSound("sounds/walking2.mp3", 70);
+				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 3:
 				snake_x++;
-				playSound("sounds/walking2.mp3", 70);
+				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 4:
 				snake_y--;
-				playSound("sounds/walking2.mp3", 70);
+				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 5:
 				// left
                 bullet_left_x = snake_x - 1;
                 bullet_left_y = snake_y;
-				system("mplayer sounds/pew.mp3 > /dev/null 2>&1 &");
+				playSound("sounds/pew.mp3", 100);
                 break;
 			case 6:
 				// up
 				bullet_up_x = snake_x;
 				bullet_up_y = snake_y - 1;
-				system("mplayer sounds/pew.mp3 > /dev/null 2>&1 &");
+				playSound("sounds/pew.mp3", 100);
 				break;
 			case 7:
 				// right
 				bullet_right_x = snake_x + 1;
 				bullet_right_y = snake_y;
-				system("mplayer sounds/pew.mp3 > /dev/null 2>&1 &");
+				playSound("sounds/pew.mp3", 100);
 				break;
 			case 8:
 				// down
 				bullet_down_x = snake_x;
 				bullet_down_y = snake_y + 1;
-				system("mplayer sounds/pew.mp3 > /dev/null 2>&1 &");
+				playSound("sounds/pew.mp3", 100);
 				break;
 			case 10:
 				// change song backward
