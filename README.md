@@ -15,13 +15,13 @@
         D - walking
     
     * Shooting:
-      4 - left
-      8 - up
-      6 - right
-      2 - down
+        4 - left
+        8 - up
+        6 - right
+        2 - down
     
     * Playlist:
-      9 - forward
-      7 - backward
+        9 - forward
+        7 - backward
 
  # Have fun!
