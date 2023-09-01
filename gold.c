@@ -330,7 +330,6 @@ void handle_bullets()
 
 			delay(2);
 			fflush(stdout);
-			
 			draw(); // Redraw the screen after updating bullet position
 		}
 
