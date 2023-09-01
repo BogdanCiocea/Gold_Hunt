@@ -41,6 +41,7 @@ void playlist()
 		"just_ken",
 		"retro-wave",
 		"8bittown",
+		"swamp",
 		"frontier",
 		"zelda",
 		"memory_reboot"
