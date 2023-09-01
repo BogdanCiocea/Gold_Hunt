@@ -2,7 +2,7 @@
   # Gold Hunt
 
  # Objective:
-    * Collect as many gold as you can, there are no limits to the levels ... yet
+    * Collect as many gold as you can and progress to the next levels (you must score 1000 points each level)
     * Avoid the mines (they can be shot down with the lasers)
     * Check for easter eggs
 
