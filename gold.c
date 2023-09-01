@@ -11,15 +11,15 @@
 #define MAX_STRING 256
 
 const int length = LENGTH_OF_MAP;
-int points, lives, fruitx, fruity, snake_x, snake_y;
+int points = 0, lives, fruitx, fruity, snake_x, snake_y;
 int gameover, flag, difficulty, highscore;
 int *barriers;
+bool secret_level = 0;
 
 int nightcall = 0;
 int change_back_song = 3;
 int song_number;
-int secret_level;
-char *default_song;
+char *default_song = "2020-03-22_-_8_Bit_Surf_-_FesliyanStudios.com_-_David_Renda";
 
 int bullet_left_x = -1, bullet_left_y = -1;
 int bullet_right_x = -1, bullet_right_y = -1;
@@ -100,7 +100,6 @@ void setup()
     FILE *fp = fopen("highscore.txt", "rw");
     fscanf(fp, "%d", &highscore);
     fclose(fp);
-    points = 0;
 	song_number = -1;
 	change_back_song = 3;
 }
@@ -171,10 +170,13 @@ void draw() {
 		printf("\n");
 	}
 
-	if (difficulty > 0 || difficulty < -10) {
+	// if (difficulty > 0 || difficulty <= -10) {
+	// 	printf("\033[1;31mSecret level\033[0m\n");
+	// 	secret_level = 1;
+	// }
+
+	if (secret_level)
 		printf("\033[1;31mSecret level\033[0m\n");
-		secret_level = 1;
-	}
 
 	printf("Take the gold and watch out for the mines!\n");
 	printf("Points: %d\nLives: %d\n", points, lives);
@@ -413,6 +415,21 @@ void handle_bullets()
     }
 }
 
+void choose_level()
+{
+	if (difficulty + 10 == 12)
+		difficulty++;
+
+	if (difficulty + 10 == 115)
+		default_song = "115";
+	else if (difficulty + 10 == 911)
+		default_song = "i_shoot";
+	else if ((difficulty + 10 > 9 || difficulty <= -10) && (difficulty + 10 != 911 || difficulty + 10 != 115))
+		default_song = "song-of-storms";
+
+	playSong(default_song);
+}
+
 void logic()
 {
 	if (flag != 0) {
@@ -532,7 +549,7 @@ void logic()
 	if (lives <= 0) {
 		gameover = 1;
 		draw();
-		system("mplayer sounds/8-bit-video-game-fail-version-2-145478.mp3 > /dev/null 2>&1 &");
+		playSound("sounds/8-bit-video-game-fail-version-2-145478.mp3", 100);
 		printf("\033[1;31mGAME OVER!\033[0m\n");
 		sleep(2);
 		system("pkill mplayer");
@@ -550,15 +567,32 @@ void logic()
 			goto label4;
 		points += 10;
 
+		if (points % 1000 == 0) {
+			difficulty++;
+			printf("\033[1;31mNew level unlocked!\033[0m\n");
+			playSound("sounds/8-bit-powerup-6768.mp3", 100);
+
+			sleep(2);
+			playSound("sounds/yay.mp3", 100);
+			sleep(4);
+
+			if (difficulty == 0 || difficulty == -1)
+				difficulty += 5;
+			choose_level();
+			if (difficulty + 10 > 10 || difficulty + 10 < 1)
+				secret_level = 1;
+			setup(); // Restart the game
+			return;
+		}
+
 		if (points > highscore) {
-			printf("\033[1;31Woah hey! New highscore. Nice job!\033[0m\n");
 			FILE *fp = fopen("highscore.txt", "w");
 			highscore = points;
 			fprintf(fp, "%d", highscore);
 			fclose(fp);
 		}
 
-		system("mplayer sounds/8-bit-powerup-6768.mp3 > /dev/null 2>&1 &");
+		playSound("sounds/8-bit-powerup-6768.mp3", 100);
 	}
 }
 
@@ -582,30 +616,11 @@ void print_loading_animation(int num_cycles) {
     printf("\n");
 }
 
-void choose_level()
-{
-	if (difficulty + 10 == 115) {
-		default_song = "115";
-		goto skip;
-	}
-
-	if (difficulty + 10 == 911) {
-		default_song = "i_shoot";
-		goto skip;
-	}
-
-	if (difficulty > 0 || difficulty < -10)
-		default_song = "song-of-storms";
-
-	skip:
-
-	playSong(default_song);
-}
-
 void title_screen_display()
 {
 	system("clear");
-	system("mplayer -loop 9999 sounds/8bit-music-for-game-68698.mp3 > /dev/null 2>&1 &");
+	playSong("8bit-music-for-game-68698");
+
 	const char *title =
         "\033[1;33m  ______             __        __        __    __                       __     \n"
         " /      \\           |  \\      |  \\      |  \\  |  \\                     |  \\    \n"
@@ -627,14 +642,16 @@ void title_screen_display()
 
 	printf("Choose the");
 	printf("\033[1;32m level \033[0m");
-	printf("(1 -> 10): ");
+	printf("(1 -> 8): ");
 	scanf("%d", &difficulty);
 	printf("\n");
 	system("mplayer sounds/success.mp3 > /dev/null 2>&1");
 
 	difficulty -= 10;
-	if (difficulty == 0 || difficulty == -1)
-		difficulty = -2;
+	if (difficulty == 0 || difficulty == -1) {
+		difficulty += 5;
+		choose_level();
+	}
 }
 
 int main(void)
@@ -651,12 +668,18 @@ restart:
 
 	setup();
 
-	default_song = "2020-03-22_-_8_Bit_Surf_-_FesliyanStudios.com_-_David_Renda";
+	points = 0;
+	//default_song = "2020-03-22_-_8_Bit_Surf_-_FesliyanStudios.com_-_David_Renda";
 	playSong(default_song);
 
 	choose_level();
 
-	secret_level = 0;
+	if (difficulty > 0 || difficulty <= -10) {
+		//printf("\033[1;31mSecret level\033[0m\n");
+		secret_level = 1;
+	} else
+		secret_level = 0;
+
 	while (!gameover) {
 		draw();
 		input();
