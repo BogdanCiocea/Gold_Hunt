@@ -1,6 +1,6 @@
 
-                                Gold Hunt
-                                -the game-
+  # Gold Hunt
+  ## -the game-
 
  # Objective:
     * Collect as many gold as you can, there are no limits to the levels ... yet
