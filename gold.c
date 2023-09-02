@@ -11,6 +11,7 @@
 #define MAX_STRING 256
 #define MAX_LEVEL_POINTS 500
 #define BULLETS 30
+#define BULLETS_ADDED 50
 
 int points = 0, lives, gold_x, gold_y, player_x, player_y;
 int gameover, flag, difficulty, highscore;
@@ -96,7 +97,7 @@ void setup()
         ammo_bag_y = rand() % LENGTH_OF_MAP;
     }
 
-    barriers[ammo_bag_y * (LENGTH_OF_MAP * 2) + ammo_bag_x] = 0; // Clear barrier at fruit position
+    barriers[ammo_bag_y * (LENGTH_OF_MAP * 2) + ammo_bag_x] = 0;
 
     // Check if the fruit collides with barriers
     while (barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x]) {
@@ -104,7 +105,7 @@ void setup()
         gold_y = rand() % LENGTH_OF_MAP;
     }
 
-    barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x] = 0; // Clear barrier at fruit position
+    barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x] = 0;
 
     // Generate barriers and avoid fruit position
     for (int i = 0; i < LENGTH_OF_MAP * LENGTH_OF_MAP * 2; i++) {
@@ -651,7 +652,7 @@ void logic()
 	}
 
 	if (player_x == ammo_bag_x && player_y == ammo_bag_y) {
-		bullets += 100;
+		bullets += BULLETS_ADDED;
 		ammo_bag_x = -1;
 		ammo_bag_y = -1;
 		playSound("sounds/ammo.mp3", 100);
