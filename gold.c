@@ -11,7 +11,6 @@
 #define MAX_STRING 256
 #define MAX_LEVEL_POINTS 1000
 
-//const int LENGTH_OF_MAP = LENGTH_OF_MAP;
 int points = 0, lives, fruitx, fruity, snake_x, snake_y;
 int gameover, flag, difficulty, highscore;
 int *barriers;
