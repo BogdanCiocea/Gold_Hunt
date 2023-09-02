@@ -9,19 +9,17 @@
 
 #define LENGTH_OF_MAP 28
 #define MAX_STRING 256
-#define MAX_LEVEL_POINTS 1000
+#define MAX_LEVEL_POINTS 500
+#define BULLETS 30
 
 int points = 0, lives, fruitx, fruity, snake_x, snake_y;
 int gameover, flag, difficulty, highscore;
 int *barriers;
 int level = 0;
+int bullets;
 
 bool secret_level = false;
-bool ninth_level = false;
-bool tenth_level = false;
-bool eleventh_level = false;
 
-int nightcall = 0;
 int change_back_song = 3;
 int song_number;
 char *default_song;
@@ -109,6 +107,7 @@ void setup()
 	default_song = "2020-03-22_-_8_Bit_Surf_-_FesliyanStudios.com_-_David_Renda";
 	song_number = -1;
 	change_back_song = 3;
+	bullets = BULLETS;
 }
 
 void display_pro_tips()
@@ -186,6 +185,13 @@ void draw() {
 	//printf("Take the gold and watch out for the mines!\n");
 	printf("Points: %d\nLives: %d\n", points, lives);
 	printf("Highscore: %d\n", highscore);
+
+	if (bullets > 15)
+		printf("Bullets: \033[1;32m%d\033[0m\n", bullets);
+	else if (bullets > 5)
+		printf("Bullets: \033[38;5;208m%d\033[0m\n", bullets);
+	else if (bullets >= 0)
+		printf("Bullets: \033[31m%d\033[0m\n", bullets);
 
 	if (song_number == -1) {
 		printf("\033[1;32mPress 9 to change the song\033[0m\n");
@@ -314,110 +320,116 @@ void playSound(const char *soundFile, int volume) {
 
 void handle_bullets()
 {
-	/* LEFT */
-	if (bullet_left_x >= 0 && bullet_left_y >= 0) {
-		while (bullet_left_x >= 0 && bullet_left_y >= 0) {
-			// Check if the bullet's position is within the boundaries and if there's a barrier to hit
-			if (barriers[bullet_left_y * (LENGTH_OF_MAP * 2) + bullet_left_x] == 1) {
-				barriers[bullet_left_y * (LENGTH_OF_MAP * 2) + bullet_left_x] = 0; // Remove the barrier
-				bullet_left_x = -1; // Reset the bullet's position
-				bullet_left_y = -1;
-				break; // Exit the loop when a barrier is hit
+	if (bullets) {
+		/* LEFT */
+		if (bullet_left_x >= 0 && bullet_left_y >= 0) {
+			while (bullet_left_x >= 0 && bullet_left_y >= 0) {
+				// Check if the bullet's position is within the boundaries and if there's a barrier to hit
+				if (barriers[bullet_left_y * (LENGTH_OF_MAP * 2) + bullet_left_x] == 1) {
+					barriers[bullet_left_y * (LENGTH_OF_MAP * 2) + bullet_left_x] = 0; // Remove the barrier
+					bullet_left_x = -1; // Reset the bullet's position
+					bullet_left_y = -1;
+					break; // Exit the loop when a barrier is hit
+				}
+
+				// Move the bullet
+				bullet_left_x--;
+
+				// Exit the loop when the bullet goes out of bounds
+				if (bullet_left_x < 0) {
+					bullet_left_x = -1;
+					bullet_left_y = -1;
+					break;
+				}
+
+				delay(2);
+				fflush(stdout);
+				draw(); // Redraw the screen after updating bullet position
 			}
 
-			// Move the bullet
-			bullet_left_x--;
+		/* RIGHT */
+		} else if (bullet_right_x >= 0 && bullet_right_y >= 0) {
+			while (bullet_right_x >= 0 && bullet_right_y >= 0) {
+				// Check if the bullet's position is within the boundaries and if there's a barrier to hit
+				if (barriers[bullet_right_y * (LENGTH_OF_MAP * 2) + bullet_right_x] == 1) {
+					barriers[bullet_right_y * (LENGTH_OF_MAP * 2) + bullet_right_x] = 0; // Remove the barrier
+					bullet_right_y = -1; // Reset the bullet's position
+					bullet_right_x = -1;
+					break; // Exit the loop when a barrier is hit
+				}
 
-			// Exit the loop when the bullet goes out of bounds
-			if (bullet_left_x < 0) {
-				bullet_left_x = -1;
-				bullet_left_y = -1;
-				break;
+				// Move the bullet
+				bullet_right_x++;
+
+				// Exit the loop when the bullet goes out of bounds
+				if (bullet_right_x > LENGTH_OF_MAP * 4) {
+					bullet_right_y = -1; // Reset the bullet's position
+					bullet_right_x = -1;
+					break;
+				}
+
+				delay(2);
+				fflush(stdout);
+				draw(); // Redraw the screen after updating bullet position
 			}
 
-			delay(2);
-			fflush(stdout);
-			draw(); // Redraw the screen after updating bullet position
+		/* UP */
+		} else if (bullet_up_x >= 0 && bullet_up_y >= 0) {
+			while (bullet_up_x >= 0 && bullet_up_y >= 0) {
+				// Check if the bullet's position is within the boundaries and if there's a barrier to hit
+				if (barriers[bullet_up_y * (LENGTH_OF_MAP * 2) + bullet_up_x] == 1) {
+					barriers[bullet_up_y * (LENGTH_OF_MAP * 2) + bullet_up_x] = 0; // Remove the barrier
+					bullet_up_y = -1; // Reset the bullet's position
+					bullet_up_x = -1;
+					break; // Exit the loop when a barrier is hit
+				}
+
+				// Move the bullet
+				bullet_up_y--;
+
+				// Exit the loop when the bullet goes out of bounds
+				if (bullet_up_y < 0) {
+					bullet_up_y = -1; // Reset the bullet's position
+					bullet_up_x = -1;
+					break;
+				}
+
+				delay(5);
+				fflush(stdout);
+				draw(); // Redraw the screen after updating bullet position
+			}
+
+		/* DOWN */
+		} else if (bullet_down_x >= 0 && bullet_down_y >= 0) {
+			while (bullet_down_x >= 0 && bullet_down_y >= 0) {
+				// Check if the bullet's position is within the boundaries and if there's a barrier to hit
+				if (barriers[bullet_down_y * (LENGTH_OF_MAP * 2) + bullet_down_x] == 1) {
+					barriers[bullet_down_y * (LENGTH_OF_MAP * 2) + bullet_down_x] = 0; // Remove the barrier
+					bullet_down_y = -1; // Reset the bullet's position
+					bullet_down_x = -1;
+					break; // Exit the loop when a barrier is hit
+				}
+
+				// Move the bullet
+				bullet_down_y++;  // Move the bullet downward
+
+				// Exit the loop when the bullet goes out of bounds
+				if (bullet_down_y >= LENGTH_OF_MAP) { // Adjust the condition for the lower boundary
+					bullet_down_y = -1; // Reset the bullet's position
+					bullet_down_x = -1;
+					break;
+				}
+
+				delay(5);
+				fflush(stdout);
+				draw(); // Redraw the screen after updating bullet position
+			}
 		}
 
-	/* RIGHT */
-	} else if (bullet_right_x >= 0 && bullet_right_y >= 0) {
-		while (bullet_right_x >= 0 && bullet_right_y >= 0) {
-			// Check if the bullet's position is within the boundaries and if there's a barrier to hit
-			if (barriers[bullet_right_y * (LENGTH_OF_MAP * 2) + bullet_right_x] == 1) {
-				barriers[bullet_right_y * (LENGTH_OF_MAP * 2) + bullet_right_x] = 0; // Remove the barrier
-				bullet_right_y = -1; // Reset the bullet's position
-				bullet_right_x = -1;
-				break; // Exit the loop when a barrier is hit
-			}
+		bullets--;
 
-			// Move the bullet
-			bullet_right_x++;
-
-			// Exit the loop when the bullet goes out of bounds
-			if (bullet_right_x > LENGTH_OF_MAP * 4) {
-				bullet_right_y = -1; // Reset the bullet's position
-				bullet_right_x = -1;
-				break;
-			}
-
-			delay(2);
-			fflush(stdout);
-			draw(); // Redraw the screen after updating bullet position
-		}
-
-	/* UP */
-	} else if (bullet_up_x >= 0 && bullet_up_y >= 0) {
-		while (bullet_up_x >= 0 && bullet_up_y >= 0) {
-			// Check if the bullet's position is within the boundaries and if there's a barrier to hit
-			if (barriers[bullet_up_y * (LENGTH_OF_MAP * 2) + bullet_up_x] == 1) {
-				barriers[bullet_up_y * (LENGTH_OF_MAP * 2) + bullet_up_x] = 0; // Remove the barrier
-				bullet_up_y = -1; // Reset the bullet's position
-				bullet_up_x = -1;
-				break; // Exit the loop when a barrier is hit
-			}
-
-			// Move the bullet
-			bullet_up_y--;
-
-			// Exit the loop when the bullet goes out of bounds
-			if (bullet_up_y < 0) {
-				bullet_up_y = -1; // Reset the bullet's position
-				bullet_up_x = -1;
-				break;
-			}
-
-			delay(5);
-			fflush(stdout);
-			draw(); // Redraw the screen after updating bullet position
-		}
-
-	/* DOWN */
-	} else if (bullet_down_x >= 0 && bullet_down_y >= 0) {
-        while (bullet_down_x >= 0 && bullet_down_y >= 0) {
-            // Check if the bullet's position is within the boundaries and if there's a barrier to hit
-            if (barriers[bullet_down_y * (LENGTH_OF_MAP * 2) + bullet_down_x] == 1) {
-                barriers[bullet_down_y * (LENGTH_OF_MAP * 2) + bullet_down_x] = 0; // Remove the barrier
-                bullet_down_y = -1; // Reset the bullet's position
-                bullet_down_x = -1;
-                break; // Exit the loop when a barrier is hit
-            }
-
-            // Move the bullet
-            bullet_down_y++;  // Move the bullet downward
-
-            // Exit the loop when the bullet goes out of bounds
-            if (bullet_down_y >= LENGTH_OF_MAP) { // Adjust the condition for the lower boundary
-                bullet_down_y = -1; // Reset the bullet's position
-                bullet_down_x = -1;
-                break;
-            }
-
-            delay(5);
-			fflush(stdout);
-            draw(); // Redraw the screen after updating bullet position
-        }
-    }
+	} else
+		playSound("sounds/bullets.mp3", 100);
 }
 
 void choose_level()
@@ -464,27 +476,40 @@ void logic()
 				break;
 			case 5:
 				// left
-                bullet_left_x = snake_x - 1;
-                bullet_left_y = snake_y;
-				playSound("sounds/pew.mp3", 100);
+				if (bullets) {
+					bullet_left_x = snake_x - 1;
+					bullet_left_y = snake_y;
+					playSound("sounds/pew.mp3", 100);
+				}
+				handle_bullets();
                 break;
 			case 6:
 				// up
-				bullet_up_x = snake_x;
-				bullet_up_y = snake_y - 1;
-				playSound("sounds/pew.mp3", 100);
+				if (bullets) {
+					bullet_up_x = snake_x;
+					bullet_up_y = snake_y - 1;
+					playSound("sounds/pew.mp3", 100);
+				}
+				handle_bullets();
 				break;
 			case 7:
 				// right
-				bullet_right_x = snake_x + 1;
-				bullet_right_y = snake_y;
-				playSound("sounds/pew.mp3", 100);
+				if (bullets) {
+					bullet_right_x = snake_x + 1;
+					bullet_right_y = snake_y;
+					playSound("sounds/pew.mp3", 100);
+				}
+				handle_bullets();
 				break;
 			case 8:
 				// down
-				bullet_down_x = snake_x;
-				bullet_down_y = snake_y + 1;
-				playSound("sounds/pew.mp3", 100);
+				if (bullets) {
+					bullet_down_x = snake_x;
+					bullet_down_y = snake_y + 1;
+					playSound("sounds/pew.mp3", 100);
+				}
+
+				handle_bullets();
 				break;
 			case 10:
 				// change song backward
@@ -512,7 +537,7 @@ void logic()
 		flag = 0;
 	}
 
-	handle_bullets();
+	
 
 	if (snake_x <= 0 || snake_x >= LENGTH_OF_MAP * 4 - 1
 		|| snake_y <= 0 || snake_y >= LENGTH_OF_MAP - 1
@@ -581,6 +606,7 @@ void logic()
 		if (points % MAX_LEVEL_POINTS == 0) {
 			difficulty++;
 			level++;
+			bullets += BULLETS;
 			printf("\033[1;31mNew level unlocked!\033[0m\n");
 			playSound("sounds/8-bit-powerup-6768.mp3", 100);
 
