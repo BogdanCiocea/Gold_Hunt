@@ -11,7 +11,7 @@
 #define MAX_STRING 256
 #define MAX_LEVEL_POINTS 1000
 
-const int length = LENGTH_OF_MAP;
+//const int LENGTH_OF_MAP = LENGTH_OF_MAP;
 int points = 0, lives, fruitx, fruity, snake_x, snake_y;
 int gameover, flag, difficulty, highscore;
 int *barriers;
@@ -42,9 +42,9 @@ void playSong(const char *songPath) {
 void playlist()
 {
 	const char *playlist[] = {
-        "nightcall",
-        "resonance",
+		"resonance",
 		"just_ken",
+		"nightcall",
 		"retro-wave",
 		"8bittown",
 		"swamp",
@@ -68,36 +68,36 @@ void setup()
 {
     gameover = 0;
 	lives = 3;
-    barriers = (int*)malloc(length * length * 2 * sizeof(int));
+    barriers = (int*)malloc(LENGTH_OF_MAP * LENGTH_OF_MAP * 2 * sizeof(int));
 
-    for (int i = 0; i < length * length * 2; i++)
+    for (int i = 0; i < LENGTH_OF_MAP * LENGTH_OF_MAP * 2; i++)
         barriers[i] = rand();
 
-    for (int i = 0; i < length * length * 2; i++) {
+    for (int i = 0; i < LENGTH_OF_MAP * LENGTH_OF_MAP * 2; i++) {
         if (barriers[i] % difficulty == 0)
             barriers[i] = 1;
         else
             barriers[i] = 0;
     }
 
-    snake_x = length * 2;
-    snake_y = length / 2;
+    snake_x = LENGTH_OF_MAP * 2;
+    snake_y = LENGTH_OF_MAP / 2;
     flag = 1;
 
     // Generate fruit coordinates
-    fruitx = rand() % length * 4;
-    fruity = rand() % length;
+    fruitx = rand() % LENGTH_OF_MAP * 4;
+    fruity = rand() % LENGTH_OF_MAP;
 
     // Check if the fruit collides with barriers
-    while (barriers[fruity * (length * 2) + fruitx]) {
-        fruitx = rand() % ((length - 1) * 4) + 1;
-        fruity = rand() % length;
+    while (barriers[fruity * (LENGTH_OF_MAP * 2) + fruitx]) {
+        fruitx = rand() % LENGTH_OF_MAP * 4;
+        fruity = rand() % LENGTH_OF_MAP;
     }
 
-    barriers[fruity * (length * 2) + fruitx] = 0; // Clear barrier at fruit position
+    barriers[fruity * (LENGTH_OF_MAP * 2) + fruitx] = 0; // Clear barrier at fruit position
 
     // Generate barriers and avoid fruit position
-    for (int i = 0; i < length * length * 2; i++) {
+    for (int i = 0; i < LENGTH_OF_MAP * LENGTH_OF_MAP * 2; i++) {
         if (barriers[i] == 1) {
             barriers[i] = rand() % difficulty == 0 ? 1 : 0;
         }
@@ -145,17 +145,17 @@ void display_pro_tips()
 
 void draw() {
 	system("clear");
-	for (int i = 0; i < length; i++) {
-		for (int j = 0; j < length * 4; j++) {
+	for (int i = 0; i < LENGTH_OF_MAP; i++) {
+		for (int j = 0; j < LENGTH_OF_MAP * 4; j++) {
 
-			int isBarrier = barriers[i * (length * 2) + j];
+			int isBarrier = barriers[i * (LENGTH_OF_MAP * 2) + j];
 
-			if (i == 0 || i == length - 1 || j == 0 || j == length * 4 - 1) {
-				if (i == length / 2 || i == length / 2 + 1 
-					|| i == length / 2 - 1 || j == length * 2
-					|| j == length * 2 + 1 || j == length * 2 - 1
-					|| j == length * 2 + 2 || j == length * 2 - 2
-					|| j == length * 2 + 3 || j == length * 2 - 3)
+			if (i == 0 || i == LENGTH_OF_MAP - 1 || j == 0 || j == LENGTH_OF_MAP * 4 - 1) {
+				if (i == LENGTH_OF_MAP / 2 || i == LENGTH_OF_MAP / 2 + 1 
+					|| i == LENGTH_OF_MAP / 2 - 1 || j == LENGTH_OF_MAP * 2
+					|| j == LENGTH_OF_MAP * 2 + 1 || j == LENGTH_OF_MAP * 2 - 1
+					|| j == LENGTH_OF_MAP * 2 + 2 || j == LENGTH_OF_MAP * 2 - 2
+					|| j == LENGTH_OF_MAP * 2 + 3 || j == LENGTH_OF_MAP * 2 - 3)
 					// Portals woooooooooooooooooooo
 					printf("\033[1;35m.\033[0m"); 
 				else
@@ -178,11 +178,13 @@ void draw() {
 		printf("\n");
 	}
 
+	printf("\n");
+
 	if (secret_level)
 		printf("\033[1;31mSecret level\033[0m\n");
 
 	printf("\033[1;33mLevel %d\033[0m\n", level);
-	printf("Take the gold and watch out for the mines!\n");
+	//printf("Take the gold and watch out for the mines!\n");
 	printf("Points: %d\nLives: %d\n", points, lives);
 	printf("Highscore: %d\n", highscore);
 
@@ -317,8 +319,8 @@ void handle_bullets()
 	if (bullet_left_x >= 0 && bullet_left_y >= 0) {
 		while (bullet_left_x >= 0 && bullet_left_y >= 0) {
 			// Check if the bullet's position is within the boundaries and if there's a barrier to hit
-			if (barriers[bullet_left_y * (length * 2) + bullet_left_x] == 1) {
-				barriers[bullet_left_y * (length * 2) + bullet_left_x] = 0; // Remove the barrier
+			if (barriers[bullet_left_y * (LENGTH_OF_MAP * 2) + bullet_left_x] == 1) {
+				barriers[bullet_left_y * (LENGTH_OF_MAP * 2) + bullet_left_x] = 0; // Remove the barrier
 				bullet_left_x = -1; // Reset the bullet's position
 				bullet_left_y = -1;
 				break; // Exit the loop when a barrier is hit
@@ -343,8 +345,8 @@ void handle_bullets()
 	} else if (bullet_right_x >= 0 && bullet_right_y >= 0) {
 		while (bullet_right_x >= 0 && bullet_right_y >= 0) {
 			// Check if the bullet's position is within the boundaries and if there's a barrier to hit
-			if (barriers[bullet_right_y * (length * 2) + bullet_right_x] == 1) {
-				barriers[bullet_right_y * (length * 2) + bullet_right_x] = 0; // Remove the barrier
+			if (barriers[bullet_right_y * (LENGTH_OF_MAP * 2) + bullet_right_x] == 1) {
+				barriers[bullet_right_y * (LENGTH_OF_MAP * 2) + bullet_right_x] = 0; // Remove the barrier
 				bullet_right_y = -1; // Reset the bullet's position
 				bullet_right_x = -1;
 				break; // Exit the loop when a barrier is hit
@@ -354,7 +356,7 @@ void handle_bullets()
 			bullet_right_x++;
 
 			// Exit the loop when the bullet goes out of bounds
-			if (bullet_right_x > length * 4) {
+			if (bullet_right_x > LENGTH_OF_MAP * 4) {
 				bullet_right_y = -1; // Reset the bullet's position
 				bullet_right_x = -1;
 				break;
@@ -369,8 +371,8 @@ void handle_bullets()
 	} else if (bullet_up_x >= 0 && bullet_up_y >= 0) {
 		while (bullet_up_x >= 0 && bullet_up_y >= 0) {
 			// Check if the bullet's position is within the boundaries and if there's a barrier to hit
-			if (barriers[bullet_up_y * (length * 2) + bullet_up_x] == 1) {
-				barriers[bullet_up_y * (length * 2) + bullet_up_x] = 0; // Remove the barrier
+			if (barriers[bullet_up_y * (LENGTH_OF_MAP * 2) + bullet_up_x] == 1) {
+				barriers[bullet_up_y * (LENGTH_OF_MAP * 2) + bullet_up_x] = 0; // Remove the barrier
 				bullet_up_y = -1; // Reset the bullet's position
 				bullet_up_x = -1;
 				break; // Exit the loop when a barrier is hit
@@ -395,8 +397,8 @@ void handle_bullets()
 	} else if (bullet_down_x >= 0 && bullet_down_y >= 0) {
         while (bullet_down_x >= 0 && bullet_down_y >= 0) {
             // Check if the bullet's position is within the boundaries and if there's a barrier to hit
-            if (barriers[bullet_down_y * (length * 2) + bullet_down_x] == 1) {
-                barriers[bullet_down_y * (length * 2) + bullet_down_x] = 0; // Remove the barrier
+            if (barriers[bullet_down_y * (LENGTH_OF_MAP * 2) + bullet_down_x] == 1) {
+                barriers[bullet_down_y * (LENGTH_OF_MAP * 2) + bullet_down_x] = 0; // Remove the barrier
                 bullet_down_y = -1; // Reset the bullet's position
                 bullet_down_x = -1;
                 break; // Exit the loop when a barrier is hit
@@ -406,7 +408,7 @@ void handle_bullets()
             bullet_down_y++;  // Move the bullet downward
 
             // Exit the loop when the bullet goes out of bounds
-            if (bullet_down_y >= length) { // Adjust the condition for the lower boundary
+            if (bullet_down_y >= LENGTH_OF_MAP) { // Adjust the condition for the lower boundary
                 bullet_down_y = -1; // Reset the bullet's position
                 bullet_down_x = -1;
                 break;
@@ -497,7 +499,6 @@ void logic()
 				song_number = -1;
 				playSong(default_song);
 				break;
-
 			case 11:
 				// change song forward
 				song_number++;
@@ -514,46 +515,46 @@ void logic()
 
 	handle_bullets();
 
-	if (snake_x <= 0 || snake_x >= length * 4 - 1
-		|| snake_y <= 0 || snake_y >= length - 1
-		|| barriers[snake_y * (length * 2) + snake_x]) {
+	if (snake_x <= 0 || snake_x >= LENGTH_OF_MAP * 4 - 1
+		|| snake_y <= 0 || snake_y >= LENGTH_OF_MAP - 1
+		|| barriers[snake_y * (LENGTH_OF_MAP * 2) + snake_x]) {
 
-		if (snake_x == 0 && (snake_y == length / 2
-		|| snake_y == length / 2 + 1 || snake_y == length / 2 - 1)) {
-			snake_x = length * 4 - 2;
+		if (snake_x == 0 && (snake_y == LENGTH_OF_MAP / 2
+		|| snake_y == LENGTH_OF_MAP / 2 + 1 || snake_y == LENGTH_OF_MAP / 2 - 1)) {
+			snake_x = LENGTH_OF_MAP * 4 - 2;
 			system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
 		}
-		else if (snake_x == length * 4 - 1
-				&& (snake_y == length / 2 || snake_y == length / 2 + 1
-					|| snake_y == length / 2 - 1)) {
+		else if (snake_x == LENGTH_OF_MAP * 4 - 1
+				&& (snake_y == LENGTH_OF_MAP / 2 || snake_y == LENGTH_OF_MAP / 2 + 1
+					|| snake_y == LENGTH_OF_MAP / 2 - 1)) {
 						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
 						snake_x = 1;
 					}
 
 		else if (snake_y == 0
-					&& (snake_x == length * 2 || snake_x == length * 2 + 1
-						|| snake_x == length * 2 - 1
-						|| snake_x == length * 2 + 2
-						|| snake_x == length * 2 - 2
-						|| snake_x == length * 2 + 3
-						|| snake_x == length * 2 - 3)) {
+					&& (snake_x == LENGTH_OF_MAP * 2 || snake_x == LENGTH_OF_MAP * 2 + 1
+						|| snake_x == LENGTH_OF_MAP * 2 - 1
+						|| snake_x == LENGTH_OF_MAP * 2 + 2
+						|| snake_x == LENGTH_OF_MAP * 2 - 2
+						|| snake_x == LENGTH_OF_MAP * 2 + 3
+						|| snake_x == LENGTH_OF_MAP * 2 - 3)) {
 							system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
-							snake_y = length - 2;
+							snake_y = LENGTH_OF_MAP - 2;
 						}
 
-		else if (snake_y == length - 1
-					&& (snake_x == length * 2 || snake_x == length * 2 + 1
-					|| snake_x == length * 2 - 1 || snake_x == length * 2 + 2
-					|| snake_x == length * 2 - 2 || snake_x == length * 2 + 3
-					|| snake_x == length * 2 - 3)) {
+		else if (snake_y == LENGTH_OF_MAP - 1
+					&& (snake_x == LENGTH_OF_MAP * 2 || snake_x == LENGTH_OF_MAP * 2 + 1
+					|| snake_x == LENGTH_OF_MAP * 2 - 1 || snake_x == LENGTH_OF_MAP * 2 + 2
+					|| snake_x == LENGTH_OF_MAP * 2 - 2 || snake_x == LENGTH_OF_MAP * 2 + 3
+					|| snake_x == LENGTH_OF_MAP * 2 - 3)) {
 						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
 						snake_y = 1;
 					}
 		else {
 			system("mplayer sounds/moody-blip-43107.mp3 > /dev/null 2>&1 &");
 			lives--;
-			snake_x = length * 2;
-			snake_y = length / 2;
+			snake_x = LENGTH_OF_MAP * 2;
+			snake_y = LENGTH_OF_MAP / 2;
 		}
 	}
 
