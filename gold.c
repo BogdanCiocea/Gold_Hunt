@@ -12,7 +12,7 @@
 #define MAX_LEVEL_POINTS 1000
 #define BULLETS 30
 
-int points = 0, lives, fruitx, fruity, snake_x, snake_y;
+int points = 0, lives, gold_x, gold_y, player_x, player_y;
 int gameover, flag, difficulty, highscore;
 int *barriers;
 int level = 0;
@@ -77,21 +77,21 @@ void setup()
             barriers[i] = 0;
     }
 
-    snake_x = LENGTH_OF_MAP * 2;
-    snake_y = LENGTH_OF_MAP / 2;
+    player_x = LENGTH_OF_MAP * 2;
+    player_y = LENGTH_OF_MAP / 2;
     flag = 1;
 
     // Generate fruit coordinates
-    fruitx = rand() % LENGTH_OF_MAP * 4;
-    fruity = rand() % LENGTH_OF_MAP;
+    gold_x = rand() % LENGTH_OF_MAP * 4;
+    gold_y = rand() % LENGTH_OF_MAP;
 
     // Check if the fruit collides with barriers
-    while (barriers[fruity * (LENGTH_OF_MAP * 2) + fruitx]) {
-        fruitx = rand() % LENGTH_OF_MAP * 4;
-        fruity = rand() % LENGTH_OF_MAP;
+    while (barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x]) {
+        gold_x = rand() % LENGTH_OF_MAP * 4;
+        gold_y = rand() % LENGTH_OF_MAP;
     }
 
-    barriers[fruity * (LENGTH_OF_MAP * 2) + fruitx] = 0; // Clear barrier at fruit position
+    barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x] = 0; // Clear barrier at fruit position
 
     // Generate barriers and avoid fruit position
     for (int i = 0; i < LENGTH_OF_MAP * LENGTH_OF_MAP * 2; i++) {
@@ -157,9 +157,9 @@ void draw() {
 					printf("\033[1;35m.\033[0m"); 
 				else
 					printf("#");
-			} else if (i == fruity && j == fruitx) {
+			} else if (i == gold_y && j == gold_x) {
 				printf("\033[1;33m$\033[0m");
-			} else if (i == snake_y && j == snake_x) {
+			} else if (i == player_y && j == player_x) {
 				printf("\033[1;32m@\033[0m");
 			} else if (isBarrier) {
 				printf("\033[1;31m^\033[0m");
@@ -458,26 +458,26 @@ void logic()
 	if (flag != 0) {
 		switch (flag) {
 			case 1:
-				snake_x--;
+				player_x--;
 				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 2:
-				snake_y++;
+				player_y++;
 				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 3:
-				snake_x++;
+				player_x++;
 				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 4:
-				snake_y--;
+				player_y--;
 				playSound("sounds/walking2.mp3", 100);
 				break;
 			case 5:
 				// left
 				if (bullets) {
-					bullet_left_x = snake_x - 1;
-					bullet_left_y = snake_y;
+					bullet_left_x = player_x - 1;
+					bullet_left_y = player_y;
 					playSound("sounds/pew.mp3", 100);
 				}
 				handle_bullets();
@@ -485,8 +485,8 @@ void logic()
 			case 6:
 				// up
 				if (bullets) {
-					bullet_up_x = snake_x;
-					bullet_up_y = snake_y - 1;
+					bullet_up_x = player_x;
+					bullet_up_y = player_y - 1;
 					playSound("sounds/pew.mp3", 100);
 				}
 				handle_bullets();
@@ -494,8 +494,8 @@ void logic()
 			case 7:
 				// right
 				if (bullets) {
-					bullet_right_x = snake_x + 1;
-					bullet_right_y = snake_y;
+					bullet_right_x = player_x + 1;
+					bullet_right_y = player_y;
 					playSound("sounds/pew.mp3", 100);
 				}
 				handle_bullets();
@@ -503,8 +503,8 @@ void logic()
 			case 8:
 				// down
 				if (bullets) {
-					bullet_down_x = snake_x;
-					bullet_down_y = snake_y + 1;
+					bullet_down_x = player_x;
+					bullet_down_y = player_y + 1;
 					playSound("sounds/pew.mp3", 100);
 				}
 
@@ -538,46 +538,46 @@ void logic()
 
 	
 
-	if (snake_x <= 0 || snake_x >= LENGTH_OF_MAP * 4 - 1
-		|| snake_y <= 0 || snake_y >= LENGTH_OF_MAP - 1
-		|| barriers[snake_y * (LENGTH_OF_MAP * 2) + snake_x]) {
+	if (player_x <= 0 || player_x >= LENGTH_OF_MAP * 4 - 1
+		|| player_y <= 0 || player_y >= LENGTH_OF_MAP - 1
+		|| barriers[player_y * (LENGTH_OF_MAP * 2) + player_x]) {
 
-		if (snake_x == 0 && (snake_y == LENGTH_OF_MAP / 2
-		|| snake_y == LENGTH_OF_MAP / 2 + 1 || snake_y == LENGTH_OF_MAP / 2 - 1)) {
-			snake_x = LENGTH_OF_MAP * 4 - 2;
+		if (player_x == 0 && (player_y == LENGTH_OF_MAP / 2
+		|| player_y == LENGTH_OF_MAP / 2 + 1 || player_y == LENGTH_OF_MAP / 2 - 1)) {
+			player_x = LENGTH_OF_MAP * 4 - 2;
 			system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
 		}
-		else if (snake_x == LENGTH_OF_MAP * 4 - 1
-				&& (snake_y == LENGTH_OF_MAP / 2 || snake_y == LENGTH_OF_MAP / 2 + 1
-					|| snake_y == LENGTH_OF_MAP / 2 - 1)) {
+		else if (player_x == LENGTH_OF_MAP * 4 - 1
+				&& (player_y == LENGTH_OF_MAP / 2 || player_y == LENGTH_OF_MAP / 2 + 1
+					|| player_y == LENGTH_OF_MAP / 2 - 1)) {
 						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
-						snake_x = 1;
+						player_x = 1;
 					}
 
-		else if (snake_y == 0
-					&& (snake_x == LENGTH_OF_MAP * 2 || snake_x == LENGTH_OF_MAP * 2 + 1
-						|| snake_x == LENGTH_OF_MAP * 2 - 1
-						|| snake_x == LENGTH_OF_MAP * 2 + 2
-						|| snake_x == LENGTH_OF_MAP * 2 - 2
-						|| snake_x == LENGTH_OF_MAP * 2 + 3
-						|| snake_x == LENGTH_OF_MAP * 2 - 3)) {
+		else if (player_y == 0
+					&& (player_x == LENGTH_OF_MAP * 2 || player_x == LENGTH_OF_MAP * 2 + 1
+						|| player_x == LENGTH_OF_MAP * 2 - 1
+						|| player_x == LENGTH_OF_MAP * 2 + 2
+						|| player_x == LENGTH_OF_MAP * 2 - 2
+						|| player_x == LENGTH_OF_MAP * 2 + 3
+						|| player_x == LENGTH_OF_MAP * 2 - 3)) {
 							system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
-							snake_y = LENGTH_OF_MAP - 2;
+							player_y = LENGTH_OF_MAP - 2;
 						}
 
-		else if (snake_y == LENGTH_OF_MAP - 1
-					&& (snake_x == LENGTH_OF_MAP * 2 || snake_x == LENGTH_OF_MAP * 2 + 1
-					|| snake_x == LENGTH_OF_MAP * 2 - 1 || snake_x == LENGTH_OF_MAP * 2 + 2
-					|| snake_x == LENGTH_OF_MAP * 2 - 2 || snake_x == LENGTH_OF_MAP * 2 + 3
-					|| snake_x == LENGTH_OF_MAP * 2 - 3)) {
+		else if (player_y == LENGTH_OF_MAP - 1
+					&& (player_x == LENGTH_OF_MAP * 2 || player_x == LENGTH_OF_MAP * 2 + 1
+					|| player_x == LENGTH_OF_MAP * 2 - 1 || player_x == LENGTH_OF_MAP * 2 + 2
+					|| player_x == LENGTH_OF_MAP * 2 - 2 || player_x == LENGTH_OF_MAP * 2 + 3
+					|| player_x == LENGTH_OF_MAP * 2 - 3)) {
 						system("mplayer sounds/portal.mp3 > /dev/null 2>&1 &");
-						snake_y = 1;
+						player_y = 1;
 					}
 		else {
 			system("mplayer sounds/moody-blip-43107.mp3 > /dev/null 2>&1 &");
 			lives--;
-			snake_x = LENGTH_OF_MAP * 2;
-			snake_y = LENGTH_OF_MAP / 2;
+			player_x = LENGTH_OF_MAP * 2;
+			player_y = LENGTH_OF_MAP / 2;
 		}
 	}
 
@@ -590,15 +590,15 @@ void logic()
 		system("pkill mplayer");
 	}
 
-	if (snake_x == fruitx && snake_y == fruity) {
+	if (player_x == gold_x && player_y == gold_y) {
 	label3:
-		fruitx = rand() % 20;
-		if (fruitx == 0)
+		gold_x = rand() % 20;
+		if (gold_x == 0)
 			goto label3;
 
 	label4:
-		fruity = rand() % 20;
-		if (fruity == 0)
+		gold_y = rand() % 20;
+		if (gold_y == 0)
 			goto label4;
 		points += 10;
 
