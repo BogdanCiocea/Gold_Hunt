@@ -9,7 +9,7 @@
 
 #define LENGTH_OF_MAP 28
 #define MAX_STRING 256
-#define MAX_LEVEL_POINTS 500
+#define MAX_LEVEL_POINTS 1000
 #define BULLETS 30
 
 int points = 0, lives, fruitx, fruity, snake_x, snake_y;
@@ -107,7 +107,6 @@ void setup()
 	default_song = "2020-03-22_-_8_Bit_Surf_-_FesliyanStudios.com_-_David_Renda";
 	song_number = -1;
 	change_back_song = 3;
-	bullets = BULLETS;
 }
 
 void display_pro_tips()
@@ -710,6 +709,7 @@ restart:
 
 	points = 0;
 
+	bullets = BULLETS;
 	choose_level();
 
 	playSong(default_song);
