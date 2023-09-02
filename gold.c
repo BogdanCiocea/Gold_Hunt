@@ -9,7 +9,7 @@
 
 #define LENGTH_OF_MAP 28
 #define MAX_STRING 256
-#define MAX_LEVEL_POINTS 1000
+#define MAX_LEVEL_POINTS 500
 #define BULLETS 30
 
 int points = 0, lives, gold_x, gold_y, player_x, player_y;
@@ -17,6 +17,9 @@ int gameover, flag, difficulty, highscore;
 int *barriers;
 int level = 0;
 int bullets;
+
+int ammo_bag_x = -1;
+int ammo_bag_y = -1;
 
 bool secret_level = false;
 
@@ -84,6 +87,16 @@ void setup()
     // Generate fruit coordinates
     gold_x = rand() % LENGTH_OF_MAP * 4;
     gold_y = rand() % LENGTH_OF_MAP;
+
+	ammo_bag_x = rand() % LENGTH_OF_MAP * 4;
+    ammo_bag_y = rand() % LENGTH_OF_MAP;
+
+	while (barriers[ammo_bag_y * (LENGTH_OF_MAP * 2) + ammo_bag_x]) {
+        ammo_bag_x = rand() % LENGTH_OF_MAP * 4;
+        ammo_bag_y = rand() % LENGTH_OF_MAP;
+    }
+
+    barriers[ammo_bag_y * (LENGTH_OF_MAP * 2) + ammo_bag_x] = 0; // Clear barrier at fruit position
 
     // Check if the fruit collides with barriers
     while (barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x]) {
@@ -169,7 +182,10 @@ void draw() {
 			} else if ((i == bullet_up_y && j == bullet_up_x) || (i == bullet_down_y && j == bullet_down_x)) {
 				// Bullets pew pew
 				printf("\033[1;33m|\033[0m");
-			} else
+			} else if (i == ammo_bag_y && j == ammo_bag_x) {
+				// Bullets pew pew
+				printf("\033[1;33m=\033[0m");
+			}else
 				printf(" ");
 		}
 		printf("\n");
@@ -632,6 +648,13 @@ void logic()
 		}
 
 		playSound("sounds/8-bit-powerup-6768.mp3", 100);
+	}
+
+	if (player_x == ammo_bag_x && player_y == ammo_bag_y) {
+		bullets += 100;
+		ammo_bag_x = -1;
+		ammo_bag_y = -1;
+		playSound("sounds/ammo.mp3", 100);
 	}
 }
 
