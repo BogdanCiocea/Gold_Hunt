@@ -555,8 +555,6 @@ void logic()
 		flag = 0;
 	}
 
-	
-
 	if (player_x <= 0 || player_x >= LENGTH_OF_MAP * 4 - 1
 		|| player_y <= 0 || player_y >= LENGTH_OF_MAP - 1
 		|| barriers[player_y * (LENGTH_OF_MAP * 2) + player_x]) {
@@ -743,6 +741,7 @@ restart:
 	points = 0;
 
 	bullets = BULLETS;
+
 	choose_level();
 
 	playSong(default_song);
