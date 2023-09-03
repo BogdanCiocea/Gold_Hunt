@@ -105,7 +105,7 @@ void setup()
         gold_y = rand() % LENGTH_OF_MAP;
     }
 
-    barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x] = 0;
+    barriers[LENGTH_OF_MAP * LENGTH_OF_MAP * 2 + LENGTH_OF_MAP / 2] = 0;
 
     // Generate barriers and avoid fruit position
     for (int i = 0; i < LENGTH_OF_MAP * LENGTH_OF_MAP * 2; i++) {
@@ -113,6 +113,8 @@ void setup()
             barriers[i] = rand() % difficulty == 0 ? 1 : 0;
         }
     }
+
+	barriers[player_y * LENGTH_OF_MAP * 2 + player_x] = 0;
 
     FILE *fp = fopen("highscore.txt", "rw");
     fscanf(fp, "%d", &highscore);
@@ -609,7 +611,7 @@ void logic()
 
 	if (player_x == gold_x && player_y == gold_y) {
 	label3:
-		gold_x = rand() % 20;
+		gold_x = rand() % LENGTH_OF_MAP * 4;
 		if (gold_x == 0)
 			goto label3;
 
@@ -617,6 +619,12 @@ void logic()
 		gold_y = rand() % 20;
 		if (gold_y == 0)
 			goto label4;
+		
+		while (barriers[gold_y * LENGTH_OF_MAP * 2 + gold_x] && (gold_x || gold_y)) {
+			gold_x = rand() % LENGTH_OF_MAP * 4;
+			gold_y = rand() % 20;
+		}
+
 		points += 10;
 
 		if (points % MAX_LEVEL_POINTS == 0) {
