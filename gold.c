@@ -620,9 +620,9 @@ void logic()
 		if (gold_y == 0)
 			goto label4;
 		
-		while (barriers[gold_y * LENGTH_OF_MAP * 2 + gold_x] && (gold_x || gold_y)) {
+		while (barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x]) {
 			gold_x = rand() % LENGTH_OF_MAP * 4;
-			gold_y = rand() % 20;
+			gold_y = rand() % LENGTH_OF_MAP;
 		}
 
 		points += 10;
@@ -630,6 +630,7 @@ void logic()
 		if (points % MAX_LEVEL_POINTS == 0) {
 			difficulty++;
 			level++;
+			draw();
 			bullets += BULLETS;
 			printf("\033[1;31mNew level unlocked!\033[0m\n");
 			playSound("sounds/8-bit-powerup-6768.mp3", 100);
