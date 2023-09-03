@@ -627,9 +627,9 @@ void logic()
 
 		if (points % MAX_LEVEL_POINTS == 0) {
 			difficulty++;
-			level++;
 			draw();
-			bullets += BULLETS;
+			level++;
+
 			printf("\033[1;31mNew level unlocked!\033[0m\n");
 			playSound("sounds/8-bit-powerup-6768.mp3", 100);
 
@@ -756,6 +756,8 @@ restart:
 		input();
 		logic();
 
+	continue_now:
+
 		if (gameover) {
 			printf("Press r to restart or x to quit\n");
 			fflush(stdout);
@@ -765,6 +767,11 @@ restart:
 				if (choice == 'r' || choice == 'R') {
 					system("pkill mplayer");
 					goto restart;
+				} else if (choice == 'x' || choice == 'X') {
+					break;
+				} else {
+					gameover = 0;
+					goto continue_now;
 				}
 			}
 		}
