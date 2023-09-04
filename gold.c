@@ -100,7 +100,7 @@ void setup()
     barriers[ammo_bag_y * (LENGTH_OF_MAP * 2) + ammo_bag_x] = 0;
 
     // Check if the fruit collides with barriers
-    while (barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x]) {
+    while (barriers[gold_y * (LENGTH_OF_MAP * 2) + gold_x] || gold_x == -1 || gold_y == -1) {
         gold_x = rand() % LENGTH_OF_MAP * 4;
         gold_y = rand() % LENGTH_OF_MAP;
     }
