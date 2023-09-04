@@ -46,10 +46,16 @@ void playlist()
 		"resonance",
 		"just_ken",
 		"nightcall",
+		"heisenberg",
 		"retro-wave",
 		"8bittown",
 		"swamp",
 		"frontier",
+		"mario",
+		"star_wars_cantina",
+		"rick_roll",
+		"mandalorian",
+		"vader",
 		"zelda",
 		"memory_reboot"
     };
